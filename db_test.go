@@ -207,3 +207,20 @@ func ExampleDB_Section() {
 	}
 	// Output: Merkel Bismark Kant
 }
+
+func ExampleSection_Notification() {
+	// One of primary benefits of subsection it events
+	// Create new database located to /tmp/example-db directory
+	db := DB{Root: "/tmp/example-db"}
+	germany := db.Section("europe", "germany")
+	// Create notification listener
+	err := germany.StartNotification()
+	if err != nil {
+		panic(err)
+	}
+	// Now we can listen Create/Update/Remove events
+	for eventRecord := range germany.Notification() {
+		// We can operate with items even they are changed outside application
+		fmt.Println(eventRecord.Event)
+	}
+}
