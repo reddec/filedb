@@ -218,6 +218,7 @@ func ExampleSection_Notification() {
 	if err != nil {
 		panic(err)
 	}
+	defer germany.StopNotification()
 	// Now we can listen Create/Update/Remove events
 	for eventRecord := range germany.Notification() {
 		// We can operate with items even they are changed outside application
