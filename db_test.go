@@ -1,6 +1,7 @@
 package ui
 
 import (
+	"fmt"
 	"log"
 	"testing"
 	"time"
@@ -123,7 +124,7 @@ func TestChanges(t *testing.T) {
 		log.Println(rec)
 		crt = rec.Event == Create
 		if err := rec.Remove(); err != nil {
-			log.Println("Failed remove", err)
+			t.Fatal("Failed remove", err)
 		}
 		break
 
@@ -131,4 +132,78 @@ func TestChanges(t *testing.T) {
 	if !crt {
 		t.Fatal("Can't get create event")
 	}
+}
+
+// Examples
+
+func ExampleCRUD() {
+	// Create new database located to /tmp/example-db directory
+	db := DB{Root: "/tmp/example-db"}
+	// Create new item with ID = 001 into root section
+	err := db.Put("Hello world", "001")
+	if err != nil {
+		panic(err)
+	}
+	// Complex item also supported
+	// it will be serialized by JSON encoder (may be changed in future)
+	var user struct {
+		Name string
+		Year int
+	}
+	user.Name = "Alex"
+	user.Year = 1900
+	err = db.Put(user, "002")
+	if err != nil {
+		panic(err)
+	}
+
+	// Get item by ID in root section
+	var item string
+	err = db.Get(&item, "001")
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(item)
+	// ... or get list of all items and subsections (only id's)
+	// db.List()
+
+	// Remove item by ID in root section
+	err = db.RemoveItem("001")
+	if err != nil {
+		panic(err)
+	}
+
+	// Output: Hello world
+}
+
+func ExampleSubsection() {
+	// Create new database located to /tmp/example-db directory
+	db := DB{Root: "/tmp/example-db"}
+	// For example, we have to save users separated by country
+	// We can do it directly
+	// Here: ID = 001, section = europe/germany
+	err := db.Put("Merkel", "001", "europe", "germany")
+	if err != nil {
+		panic(err)
+	}
+	// Also we can use subsection
+	germany := db.Section("europe", "germany")
+	// Now add more people to Germany
+	if err := germany.Put("002", "Bismark"); err != nil {
+		panic(err)
+	}
+	if err := germany.Put("003", "Kant"); err != nil {
+		panic(err)
+	}
+	// And get list of people in Germany
+	for _, record := range germany.List() {
+		// Get people
+		var user string
+		err := record.Get(&user)
+		if err != nil {
+			panic(err)
+		}
+		fmt.Print(user, " ")
+	}
+	// Output: Merkel Bismark Kant
 }

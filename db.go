@@ -145,7 +145,7 @@ func (db *DB) List(sectionPath ...string) []Record {
 		name, _ := url.QueryUnescape(info.Name())
 		rec.db = db
 		rec.Subsection = info.IsDir()
-		rec.Name = name
+		rec.Name, _ = url.QueryUnescape(name)
 		rec.Section = sectionPath
 		if !rec.Subsection {
 			idx := strings.LastIndex(rec.Name, ".")
@@ -214,8 +214,8 @@ func (s *Section) StartNotification() error {
 			}
 			rec := RecordEvent{}
 			rec.db = s.db
-			rec.Subsection = strings.HasSuffix(event.Name, formatExtension)
-			rec.Name = path.Base(relative)
+			rec.Subsection = !strings.HasSuffix(event.Name, formatExtension)
+			rec.Name, _ = url.QueryUnescape(path.Base(relative))
 			rec.Section = strings.Split(path.Dir(relative), string(os.PathSeparator))
 			if event.Op&fsnotify.Write == fsnotify.Write {
 				rec.Event = Update
