@@ -1,4 +1,4 @@
-package ui
+package filedb
 
 import (
 	"fmt"
