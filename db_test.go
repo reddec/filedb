@@ -136,7 +136,7 @@ func TestChanges(t *testing.T) {
 
 // Examples
 
-func ExampleCRUD() {
+func ExampleDB() {
 	// Create new database located to /tmp/example-db directory
 	db := DB{Root: "/tmp/example-db"}
 	// Create new item with ID = 001 into root section
@@ -176,7 +176,7 @@ func ExampleCRUD() {
 	// Output: Hello world
 }
 
-func ExampleSubsection() {
+func ExampleDB_Section() {
 	// Create new database located to /tmp/example-db directory
 	db := DB{Root: "/tmp/example-db"}
 	// For example, we have to save users separated by country
